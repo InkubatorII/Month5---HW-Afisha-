@@ -7,6 +7,33 @@ from movie_app.serializers import DirectorSerializer, MovieSerializer, ReviewSer
 from django.db.models import Avg, Count
 
 
+class MovieListView(generics.ListCreateAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+
+class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+
+# Director views
+class DirectorListView(generics.ListCreateAPIView):
+    queryset = Director.objects.all()
+    serializer_class = DirectorSerializer
+
+class DirectorDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Director.objects.all()
+    serializer_class = DirectorSerializer
+
+# Review views
+class ReviewListView(generics.ListCreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+# Additional views for listing with extra data
 class MovieListWithReviewsView(generics.ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
@@ -44,27 +71,3 @@ class DirectorListWithMoviesCountView(generics.ListAPIView):
             for director in directors
         ]
         return Response(data)
-
-class DirectorListView(generics.ListCreateAPIView):
-    queryset = Director.objects.all()
-    serializer_class = DirectorSerializer
-
-class DirectorDetailView(generics.RetrieveAPIView):
-    queryset = Director.objects.all()
-    serializer_class = DirectorSerializer
-
-class MovieListView(generics.ListCreateAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer
-
-class MovieDetailView(generics.RetrieveAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer
-
-class ReviewListView(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-
-class ReviewDetailView(generics.RetrieveAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
