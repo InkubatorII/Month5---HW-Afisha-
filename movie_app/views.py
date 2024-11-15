@@ -33,19 +33,25 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
-# Additional views for listing with extra data
 class MovieListWithReviewsView(generics.ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
     def get(self, request, *args, **kwargs):
         movies = self.get_queryset().prefetch_related('reviews')
-        data = []
 
+        if not movies.exists():
+            return Response({"detail": "Фильмы не найдены."}, status=status.HTTP_404_NOT_FOUND)
+
+        data = []
         for movie in movies:
             reviews = movie.reviews.all()
             avg_rating = reviews.aggregate(Avg('stars'))['stars__avg'] or 0
-            reviews_data = [{'id': review.id, 'text': review.text, 'stars': review.stars} for review in reviews]
+
+            if not reviews.exists():
+                reviews_data = []
+            else:
+                reviews_data = [{'id': review.id, 'text': review.text, 'stars': review.stars} for review in reviews]
 
             data.append({
                 'id': movie.id,
@@ -56,12 +62,19 @@ class MovieListWithReviewsView(generics.ListAPIView):
 
         return Response(data)
 
+
+
 class DirectorListWithMoviesCountView(generics.ListAPIView):
     queryset = Director.objects.all()
     serializer_class = DirectorSerializer
 
     def get(self, request, *args, **kwargs):
         directors = self.get_queryset().annotate(movies_count=Count('movie'))
+
+        # Проверка: Если нет директоров, возвращаем ошибку
+        if not directors.exists():
+            return Response({"detail": "Режисеры  не найдены."}, status=status.HTTP_404_NOT_FOUND)
+
         data = [
             {
                 'id': director.id,
@@ -70,4 +83,5 @@ class DirectorListWithMoviesCountView(generics.ListAPIView):
             }
             for director in directors
         ]
+
         return Response(data)
