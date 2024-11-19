@@ -19,11 +19,15 @@ from django.urls import path
 from movie_app.views import (
     DirectorListView, DirectorDetailView,
     MovieListView, MovieDetailView,
-    ReviewListView, ReviewDetailView, MovieListWithReviewsView, DirectorListWithMoviesCountView
+    ReviewListView, ReviewDetailView, MovieListWithReviewsView, DirectorListWithMoviesCountView,
+    RegistrationView, ConfirmationView, LoginView
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/users/register/', RegistrationView.as_view(), name='register'),
+    path('api/v1/users/confirm/', ConfirmationView.as_view(), name='confirm'),
+    path('api/v1/users/login/', LoginView.as_view(), name='login'),
 
     path('api/v1/directors/', DirectorListWithMoviesCountView.as_view(), name='director-list'),
     path('api/v1/directors/<int:id>/', DirectorDetailView.as_view(), name='director-detail'),
